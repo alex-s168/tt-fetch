@@ -90,11 +90,11 @@ int main() {
     memset(padding, ' ', LOGO_WIDTH);
     padding[LOGO_WIDTH] = '\0';
 
-    printf("\033[s\e[0;34m%s\e[0m\033[u", tt_logo);
+    printf("\033[s");
     fflush(stdout);
 
     size_t printed_rows = 0;
-    
+
     for (chip_id_t dev_id : tt::umd::Cluster::detect_available_device_ids())
     {
         std::set<chip_id_t> cluster_devices { dev_id };
@@ -162,7 +162,10 @@ int main() {
         dev.close_device();
     }
 
-    for (; printed_rows < 23; printed_rows ++)
+    printf("\033[u\e[0;34m%s\e[0m", tt_logo);
+    fflush(stdout);
+
+    for (; printed_rows > 0; printed_rows --)
         printf("\n");
     fflush(stdout);
 }
