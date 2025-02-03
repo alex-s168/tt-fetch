@@ -1,0 +1,3 @@
+[submodule "tt-umd"]
+	path = tt-umd
+	url = https://github.com/tenstorrent/tt-umd.git
