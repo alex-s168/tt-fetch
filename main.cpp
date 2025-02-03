@@ -86,6 +86,9 @@ std::ostream& operator<<(std::ostream& os, SizeUnitVal u) {
 }
 
 int main() {
+    // we don't want tt-umd logging
+    setenv("LOGGER_FILE", "/dev/null", 0);
+
     char padding[LOGO_WIDTH + 1];
     memset(padding, ' ', LOGO_WIDTH);
     padding[LOGO_WIDTH] = '\0';
@@ -116,19 +119,19 @@ int main() {
             auto cores_pcie = asic_desc.get_cores(CoreType::PCIE);
             auto cores_active_eth = asic_desc.get_cores(CoreType::ACTIVE_ETH);
 
-            auto dram_ch_num = dev.get_num_dram_channels(asic);
+            size_t dram_ch_num = dev.get_num_dram_channels(asic);
             std::uint64_t dram_total = 0;
             std::vector<std::uint64_t> dram_ch_sizes;
             dram_ch_sizes.reserve(dram_ch_num);
-            for (size_t i = 0; i < dram_ch_num; i ++) {
-                std::uint64_t sz = dev.get_dram_channel_size(asic, i);
+            for (size_t j = 0; j < dram_ch_num; j ++) {
+                std::uint64_t sz = dev.get_dram_channel_size(asic, j);
                 dram_total += sz;
                 dram_ch_sizes.push_back(sz);
             }
             bool dram_all_ch_same_size = true;
-            if (dram_ch_num > 0) {
-                for (size_t i = 1; i < dram_ch_num; i ++) {
-                    if (dram_ch_sizes[i] != dram_ch_sizes[0]) {
+            if (dram_ch_num > 1) {
+                for (size_t j = 1; j < dram_ch_num; j ++) {
+                    if (dram_ch_sizes[j] != dram_ch_sizes[0]) {
                         dram_all_ch_same_size = false;
                         break;
                     }
@@ -162,7 +165,7 @@ int main() {
         dev.close_device();
     }
 
-    printf("\033[u\e[0;34m%s\e[0m", tt_logo);
+    printf("\033[u\e[0;94m%s\e[0m", tt_logo);
     fflush(stdout);
 
     for (; printed_rows > 0; printed_rows --)
